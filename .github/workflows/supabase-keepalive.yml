@@ -1,0 +1,43 @@
+# Hält das kostenlose Supabase-Projekt aktiv.
+# Supabase pausiert Free-Projekte nach ca. 7 Tagen ohne Zugriff. Dieser Ablauf fragt
+# die Datenbank alle 2 Tage kurz ab. Ablageort im Repository:
+#   .github/workflows/supabase-keepalive.yml
+name: Supabase aktiv halten
+
+on:
+  schedule:
+    - cron: "23 5 */2 * *"   # alle 2 Tage um 05:23 UTC
+  workflow_dispatch:          # manuell startbar unter „Actions“
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Supabase abfragen
+        env:
+          SUPABASE_URL: https://papzqkizydqhdpkbdbgt.supabase.co
+          SUPABASE_KEY: sb_publishable_DlItOsbEALOEMy7eoXosZA_T-Y2upGB   # öffentlicher Schlüssel (steht auch in index.html)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$SUPABASE_URL/rest/v1/checklists?select=id&limit=1" -H "apikey: $SUPABASE_KEY")
+          echo "Antwort von Supabase: HTTP $code"
+          test "$code" -lt 500
+
+      # GitHub schaltet zeitgesteuerte Abläufe ab, wenn 60 Tage lang nichts im Repository passiert.
+      # Daher wird höchstens alle 45 Tage eine kleine Datei aktualisiert.
+      - uses: actions/checkout@v4
+      - name: Zeitplan aktiv halten
+        run: |
+          last=$(git log -1 --format=%ct)
+          days=$(( ($(date +%s) - last) / 86400 ))
+          echo "Letzte Änderung vor $days Tagen"
+          if [ "$days" -ge 45 ]; then
+            date -u +"%Y-%m-%d %H:%M UTC" > .github/keepalive.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+            git add .github/keepalive.txt
+            git commit -m "Keepalive"
+            git push
+          fi
