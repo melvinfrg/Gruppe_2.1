@@ -110,6 +110,16 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
 @media(max-width:600px){.trow{flex-wrap:wrap}.trow .rrow-main{flex-basis:calc(100% - 80px)}.trow .rrow-tags{order:3;flex-basis:100%;justify-content:flex-start;max-width:none}.oviews .btn{padding:7px 9px}}
 .issue-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;margin-bottom:10px;display:grid;gap:4px}
 .issue-cur{margin-bottom:12px}.seg-opt.is-zulauf input:checked+span{background:#1f6e9e;border-color:#1f6e9e}.seg-opt.is-sonstige input:checked+span{background:#475569;border-color:#475569}.seg-opt.is-neu input:checked+span{background:#d97706;border-color:#d97706}
+.fb-notice{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#e8f2fb;border:2px solid #1f6e9e;color:#17324d;border-radius:14px;padding:12px 16px;margin:0 0 14px;font-size:15px}
+.fb-notice span{flex:1;min-width:200px}.fb-views .btn.active{background:#17324d!important;color:#fff!important;border-color:#17324d!important;box-shadow:none}
+.fbmsg{border:1px solid #d8e1e8;border-left:6px solid #94a3b8;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff}.fbmsg.st-neu{border-left-color:#dc2626;background:#fffafa}.fbmsg.st-gelesen{border-left-color:#1f6e9e}.fbmsg.st-bearbeitung{border-left-color:#7c3aed}.fbmsg.st-erledigt{border-left-color:#16a34a}.fbmsg.st-nicht{border-left-color:#64748b}
+.fbmsg-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.fbst{padding:3px 8px;border-radius:999px;font-size:12px;font-weight:800;background:#eaf2f8}.fbst.s-neu{background:#dc2626;color:#fff}.fbst.s-bearbeitung{background:#ede9fe}.fbst.s-erledigt{background:#dcfce7;color:#14532d}.fbst.s-nicht{background:#e2e8f0}
+.fbmsg-text{white-space:pre-wrap;margin:8px 0;overflow-wrap:anywhere}.fbmsg-actions{display:flex;flex-wrap:wrap;gap:5px}.chip.on{background:#17324d;color:#fff;border-color:#17324d}
+.fbnote{margin-top:8px}.fbnote summary{cursor:pointer;font-size:13px;color:#536b7d}.fbnote textarea{width:100%;margin-top:6px}.fbmsg-foot{display:flex;align-items:center;gap:8px;margin-top:4px}.fbmsg-foot .tc-del{margin-left:auto;font-size:16px}
+.bi-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.bi-filters select{flex:1;min-width:140px}.bi-all{display:flex;gap:8px;align-items:center;font-weight:800;margin:4px 0 6px}.bi-all input,.bi-row input{width:20px;height:20px;flex:none}
+.bi-list{max-height:42vh;overflow:auto;border:1px solid #e1e8ee;border-radius:10px}.bi-row{display:flex;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid #eef2f5;cursor:pointer}.bi-row:last-child{border-bottom:0}
+.bi-main{flex:1;min-width:0;display:flex;flex-direction:column}.bi-prob{font-size:12px;font-weight:700;color:#9c0006;white-space:nowrap}.bi-st{width:22px;text-align:center}
+@media(max-width:600px){.bi-row{flex-wrap:wrap}.bi-prob{order:3;flex-basis:100%;padding-left:30px}}
 .live-hint{background:#fff7d6;color:#6b4e00;border-bottom:1px solid #f0d77a;padding:7px 14px;font-size:13px;font-weight:700}
 .toast{position:fixed;right:18px;bottom:18px;background:#17324d;color:#fff;padding:12px 15px;border-radius:10px;z-index:400;max-width:min(420px,90vw)}
 /* Barcode */
@@ -242,6 +252,7 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
       <div class="logos" id="homeLogos"></div></div>
     <p class="lead">Wähle einen Bereich aus.</p>
     <div class="syncbar"><span id="syncDot" class="dot"></span><span id="syncText">Wird geladen …</span><span class="spacer"></span><button class="btn white hidden" id="logoutBtn">Abmelden</button></div>
+    <div id="fbNotice" class="fb-notice hidden" role="status"></div>
     <div class="choices">
       <div id="vehicleTiles" style="display:contents"></div>
       <a class="choice" href="#dienste" id="servicesChoice"><div class="icon" aria-hidden="true">📅</div><h2>Dienste</h2><p>Termine als Liste oder Monatskalender</p></a>
@@ -267,7 +278,7 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
 </section>
 
 <section id="feedbackPage" class="page hidden">
-  <div class="head"><button class="btn white backHome">← Startseite</button><strong>Wünsche &amp; Anregungen</strong></div>
+  <div class="head"><button class="btn white backHome">← Startseite</button><strong>Wünsche &amp; Anregungen</strong><span class="grow"></span><button class="btn white" id="fbInboxBtn" type="button">📬 Nachrichten einsehen</button></div>
   <div class="content">
     <div class="card">
       <h2>Anonymes Feedback</h2>
@@ -276,6 +287,12 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
       <div class="field" style="margin-top:12px"><label for="feedbackText">Deine Nachricht</label><textarea id="feedbackText" rows="8" placeholder="Bitte hier deine Rückmeldung eingeben …"></textarea></div>
       <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn blue" id="sendFeedback">✉️ Anonym absenden</button></div>
       <div id="feedbackStatus" class="muted small" style="margin-top:10px"></div>
+    </div>
+    <div class="card hidden" id="fbInbox">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">📬 Nachrichten</h2><span class="grow" style="flex:1"></span>
+        <span class="oviews fb-views"><button class="btn white" type="button" data-fbv="open">Offen</button><button class="btn white" type="button" data-fbv="done">✅ Erledigt</button><button class="btn white" type="button" data-fbv="nope">🚫 Nicht bearbeitbar</button></span>
+        <button class="btn white" id="fbRefresh" type="button" title="Aktualisieren">↻</button><button class="btn white" id="fbLock" type="button" title="Nachrichten wieder ausblenden">🔒</button></div>
+      <div id="fbList" style="margin-top:12px"></div>
     </div>
   </div>
 </section>
@@ -364,6 +381,7 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
           <span class="gst ok">✓</span> alles geprüft und keine Fehlmengen · <span class="gst open">⚙️</span> teilweise geprüft oder noch Fehlmengen offen · <span class="gst none">✗</span> noch nicht geprüft.</li>
         <li>Bei jedem Material mit <b>Fehlmenge</b>, <b>ablaufendem/abgelaufenem Datum</b> oder fälliger Prüfung erscheint neben dem Namen ein <b>⚠️ Warndreieck</b> (= Status „Neu“).</li>
         <li>Dreieck antippen → du siehst, was los ist, und kannst den Status setzen: <b>🚚 Im Zulauf</b> (optional mit Bemerkung, z. B. „bestellt am 20.10.“) oder <b>ℹ️ Sonstiges</b> (mit Freitext). Das Symbol neben dem Material ändert sich entsprechend – für alle sichtbar.</li>
+        <li><b>Viele auf einmal:</b> In der Checkliste oben <b>„🚚 Status ändern“</b> → Liste aller Fehlmengen (filterbar nach Art, Status „Neu“ und Reiter), Häkchen setzen oder abwählen → z. B. „Im Zulauf“ mit „bestellt am …“ → übernehmen.</li>
         <li>Entsteht später ein <b>neues</b> Problem (z. B. ein anderes Ablaufdatum), steht der Status automatisch wieder auf „Neu“. Der Status steht auch in der Excel-Liste.</li>
       </ul>
     </details>
@@ -570,7 +588,9 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
 
     <details class="guide-sec admin"><summary>💬 Feedback &amp; Datensicherung</summary>
       <ul>
-        <li><b>Anonyme Wünsche &amp; Anregungen</b> stehen oben in den Admin-Einstellungen: lesen, anhaken und löschen.</li>
+        <li><b>Anonyme Nachrichten:</b> Startseite → „Wünsche &amp; Anregungen“ → <b>„📬 Nachrichten einsehen“</b> (im Admin-Modus direkt, sonst mit Admin-Passwort).</li>
+        <li>Jede Nachricht steht zuerst auf <b>„Neu“</b>. Status setzen: <b>Gelesen</b>, <b>In Bearbeitung</b>, <b>Erledigt</b> (→ Archiv „Erledigt“) oder <b>Nicht bearbeitbar</b> (→ eigenes Archiv). Optional eine interne Notiz; 🗑️ löscht endgültig.</li>
+        <li>Solange es Nachrichten mit Status „Neu“ gibt, erscheint im Admin-Modus auf der Startseite ein <b>Hinweis</b> – bei jedem Aufruf der Startseite erneut.</li>
         <li><b>„⬇️ Datensicherung (JSON)“</b> speichert alle Checklisten, Eingaben und Dienste als Datei – z. B. vor größeren Umbauten.</li>
       </ul>
     </details>
@@ -625,11 +645,6 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
   <div class="head"><button class="btn white backHome">← Startseite</button><strong>Admin-Einstellungen</strong></div>
   <div class="content">
     <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Anonyme Wünsche &amp; Anregungen</h2><span class="grow" style="flex:1"></span><button class="btn white" id="refreshFeedback">↻ Aktualisieren</button><button class="btn danger" id="deleteSelectedFeedback" disabled>🗑️ Nachrichten löschen</button></div>
-      <p class="muted small">Anonym eingereichte Rückmeldungen. Auswählen und löschen möglich.</p>
-      <div id="adminFeedbackList"><div class="muted">Noch nicht geladen.</div></div>
-    </div>
-    <div class="card">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Checklisten verwalten</h2><span style="flex:1"></span><button class="btn blue" id="newChecklistBtn">＋ Neue Checkliste</button></div>
       <p class="muted small">Name, Beschreibung, Reihenfolge und Sichtbarkeit auf der Startseite ändern, Materialdaten bearbeiten oder eigene Checklisten löschen. Ausgeblendete Checklisten sehen nur Admins.</p>
       <div id="checklistAdminList"></div>
@@ -674,7 +689,7 @@ body.admin #chooser{padding-top:calc(var(--admin-h,52px) + 24px)}
 </section>
 
 <section id="viewer" class="hidden">
-  <div class="head"><button class="btn white" id="backVehicle">← Auswahl</button><strong id="viewerTitle"></strong><span class="grow"></span><button class="btn white" id="barcodeScanBtn">📷 Barcode scannen</button><button class="btn white" id="enterMaterialBtn" title="Material per Name eingeben und Ist-Bestand je Ort eintragen">⌨️<span class="lbl"> Material eingeben</span></button><button class="btn green hidden" id="addMaterialBtn" title="Material hinzufügen">＋<span class="lbl"> Material</span></button><button class="btn white hidden" id="tabsBtn" title="Reiter">🗂️<span class="lbl"> Reiter</span></button><button class="btn white hidden" id="expBtn" title="Farben für Ablauf- und Prüfdaten">🎨<span class="lbl"> Farben</span></button><button class="btn white hidden" id="qrBtn" title="QR-Etiketten">🏷️<span class="lbl"> QR</span></button><button class="btn blue hidden" id="editCurrentBtn">✏️ Materialdaten bearbeiten</button><span id="viewerMode" class="badge"></span></div>
+  <div class="head"><button class="btn white" id="backVehicle">← Auswahl</button><strong id="viewerTitle"></strong><span class="grow"></span><button class="btn white" id="barcodeScanBtn">📷 Barcode scannen</button><button class="btn white" id="bulkIssueBtn" title="Status mehrerer Fehlmengen / Ablaufdaten auf einmal setzen (z. B. alle als bestellt)">🚚<span class="lbl"> Status ändern</span></button><button class="btn white" id="enterMaterialBtn" title="Material per Name eingeben und Ist-Bestand je Ort eintragen">⌨️<span class="lbl"> Material eingeben</span></button><button class="btn green hidden" id="addMaterialBtn" title="Material hinzufügen">＋<span class="lbl"> Material</span></button><button class="btn white hidden" id="tabsBtn" title="Reiter">🗂️<span class="lbl"> Reiter</span></button><button class="btn white hidden" id="expBtn" title="Farben für Ablauf- und Prüfdaten">🎨<span class="lbl"> Farben</span></button><button class="btn white hidden" id="qrBtn" title="QR-Etiketten">🏷️<span class="lbl"> QR</span></button><button class="btn blue hidden" id="editCurrentBtn">✏️ Materialdaten bearbeiten</button><span id="viewerMode" class="badge"></span></div>
   <div id="liveHint" class="live-hint hidden">🔄 Die Liste wurde von jemand anderem geändert – sie wird aktualisiert, sobald du deine Eingabe beendest.</div>
   <iframe id="frame" title="Fahrzeug-Checkliste"></iframe>
 </section>
@@ -954,6 +969,7 @@ function subscribeRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>onRemoteService(p))
     .on('postgres_changes',{event:'*',schema:'public',table:'checklists'},p=>onRemoteChecklist(p))
     .on('postgres_changes',{event:'*',schema:'public',table:'reports'},p=>onRemoteReport(p))
+    .on('postgres_changes',{event:'*',schema:'public',table:'anonymous_feedback'},p=>onRemoteFeedback(p))
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'report_photos'},p=>{const r=p.new?.report_id;if(r){photoCounts[r]=(photoCounts[r]||0)+1;if(!$('reportsPage').classList.contains('hidden'))renderReports()}})
     .subscribe();
 }
@@ -1259,6 +1275,8 @@ function refreshVehicleSelects(){
 function showPage(id){
   document.querySelectorAll('.page,#viewer').forEach(x=>x.classList.add('hidden'));
   $('chooser').style.display=id?'none':'grid';
+  if(!id&&adminUnlocked&&typeof maybeFbPopup==='function')setTimeout(()=>{updateFbNotice();maybeFbPopup()},250);
+  if(id!=='feedbackPage'&&$('fbInbox')&&!adminUnlocked&&!fb.unlocked)$('fbInbox').classList.add('hidden');
   if(id)$(id).classList.remove('hidden');
   if(id!=='viewer'){currentVehicle=null;$('frame').srcdoc=''}
   window.scrollTo(0,0);
@@ -1273,12 +1291,12 @@ function openAdmin(){
   const p=askPassword('Admin');if(p===null)return;
   if(p!==settings.adminPassword){alert('Falsches Passwort.');return}
   adminUnlocked=true;serviceUnlocked=true;setAdminUi(true);
-  toast('Admin-Modus aktiviert');goHome();
+  toast('Admin-Modus aktiviert');goHome();loadFeedbackInbox(true).then(()=>{updateFbNotice();maybeFbPopup()});
 }
 function requireAdmin(){if(adminUnlocked)return true;const p=askPassword('Admin-Passwort erforderlich');if(p===settings.adminPassword){adminUnlocked=true;serviceUnlocked=true;setAdminUi(true);return true}if(p!==null)alert('Falsches Passwort.');return false}
 function exitAdmin(){
   if(fileDirty&&!confirm('Es gibt ungespeicherte Änderungen an Passwörtern, Namen oder Materialstammdaten. Trotzdem verlassen?\n(Die Änderungen bleiben bis zum Neuladen der Seite erhalten.)'))return;
-  adminUnlocked=false;serviceUnlocked=false;guideAdminOpen=false;orgaUnlocked=false;setAdminUi(false);goHome();toast('Admin-Modus beendet.');
+  adminUnlocked=false;serviceUnlocked=false;guideAdminOpen=false;orgaUnlocked=false;fb.unlocked=false;$('fbInbox').classList.add('hidden');setAdminUi(false);updateFbNotice();goHome();toast('Admin-Modus beendet.');
 }
 async function openAdminSettings(){
   if(!adminUnlocked)return;showPage('adminPage');
@@ -1289,7 +1307,6 @@ async function openAdminSettings(){
     :'Offline-Modus: Eingaben werden nur im Browser dieses Geräts gespeichert. Für geräteübergreifende Synchronisation in der Datei oben bei <code>CONFIG</code> die Supabase-Daten eintragen.';
   $('seedSupabase').classList.toggle('hidden',!ONLINE);
   $('importBackupBtn').classList.toggle('hidden',ONLINE);
-  await loadAdminFeedback();
 }
 $('adminChoice').onclick=e=>{e.preventDefault();openAdmin()};
 $('adminSettingsBtn').onclick=openAdminSettings;
@@ -1482,6 +1499,7 @@ function bridge(){ /* läuft innerhalb der eingebetteten Checkliste */
   const issueOf=item=>{try{const o=JSON.parse(item.issue||'null');return o&&typeof o==='object'?o:null}catch(e){return null}};
   function issueState(item){const sig=problemSig(item);if(!sig)return null;const o=issueOf(item);
     return (o&&o.sig===sig&&o.s)?{s:o.s,t:o.t||'',sig}:{s:'neu',t:'',sig}}
+  window.g21ProblemList=()=>{try{return base.filter(x=>x&&x.id).map(x=>{const st=issueState(x);return st?{id:x.id,sig:st.sig,s:st.s,t:st.t,miss:missOf(x)}:null}).filter(Boolean)}catch(e){return []}};
   window.g21IssueLabel=item=>{const st=issueState(item);if(!st)return '';return st.s==='zulauf'?'Im Zulauf'+(st.t?': '+st.t:''):st.s==='sonstige'?'Sonstiges: '+st.t:'Neu'};
   const ICON={neu:['⚠️','Neu – antippen, um den Status zu setzen'],zulauf:['🚚','Im Zulauf'],sonstige:['ℹ️','Sonstiges']};
   function warnRow(row){
@@ -1635,6 +1653,7 @@ async function resetVehicleValues(v){
 }
 $('backVehicle').onclick=goHome;
 $('editCurrentBtn').onclick=()=>{if(!currentVehicle)return;isCustom(currentVehicle)?openChecklistEditor(currentVehicle):openDataEditor(currentVehicle)};
+$('bulkIssueBtn').onclick=()=>currentVehicle&&openBulkIssue(currentVehicle);
 $('enterMaterialBtn').onclick=()=>currentVehicle&&openEnterMaterial(currentVehicle);
 $('addMaterialBtn').onclick=()=>currentVehicle&&openAddMaterial(currentVehicle,{group:currentTabOfFrame()});
 $('tabsBtn').onclick=()=>currentVehicle&&openTabManager(currentVehicle);
@@ -2142,6 +2161,52 @@ function openIssue(v,id,sig){
     const value=s==='neu'?'':JSON.stringify({s,t:text,sig,at:new Date().toISOString(),by:by||(sbUser?.email||'').split('@')[0]});
     setItemValue(v,id,'issue',value);
     $('modal').classList.add('hidden');toast(s==='neu'?'Status zurück auf „Neu“.':'Status gespeichert: '+ISSUE_ST.find(o=>o[0]===s)[1].replace(/^\S+\s/,''));
+  };
+}
+
+/* ----- Sammeländerung: Status für viele Fehlmengen / Ablaufdaten auf einmal (z. B. alle „Im Zulauf“) ----- */
+function openBulkIssue(v){
+  let probs=[];try{probs=$('frame').contentWindow.g21ProblemList()||[]}catch(e){}
+  probs=probs.map(p=>({...p,item:findItem(v,p.id)})).filter(p=>p.item);
+  if(!probs.length){alert('In dieser Checkliste gibt es gerade keine Fehlmengen, abgelaufenen Daten oder fälligen Prüfungen.');return}
+  if(ONLINE&&!HAS_ISSUE){alert('Zum Speichern des Status fehlt in Supabase noch die Spalte „issue_state“.');return}
+  const groups=[...new Set(probs.map(p=>p.item.group))];
+  const icon={neu:'⚠️',zulauf:'🚚',sonstige:'ℹ️'};
+  const probText=p=>{const out=[];if(/(^|\|)fehlt/.test(p.sig))out.push('fehlt '+(p.miss||''));const ab=(p.sig.match(/ablauf:([^|]+)/)||[])[1];if(ab)out.push('Ablauf '+fmtDate(ab));const pr=(p.sig.match(/pruefung:([^|]+)/)||[])[1];if(pr)out.push('Prüfung '+fmtDate(pr));return out.join(' · ')};
+  const unchecked=new Set();
+  $('modal').classList.remove('hidden');$('modalSave').classList.remove('hidden');$('modalSave').disabled=false;
+  $('modalTitle').textContent='🚚 Status gesammelt ändern';$('modalSub').textContent=vName(v)+' – z. B. alle fehlenden Materialien auf einmal als „Im Zulauf“ (bestellt) markieren.';
+  $('modalBody').innerHTML=`<div class="nr">
+    <div class="bi-filters"><select id="biKind"><option value="fehlt">Nur Fehlmengen</option><option value="ablauf">Nur Ablauf / Prüfung</option><option value="alle">Alle Probleme</option></select>
+      <select id="biStatus"><option value="neu">Nur Status „Neu“</option><option value="alle">Jeder Status</option></select>
+      <select id="biGroup"><option value="">Alle Reiter</option>${groups.map(g=>`<option>${esc(g)}</option>`).join('')}</select></div>
+    <label class="bi-all"><input type="checkbox" id="biAll" checked> <span id="biCount"></span></label>
+    <div id="biList" class="bi-list"></div>
+    <div class="field" style="margin-top:12px"><label>Neuer Status für die ausgewählten Positionen</label><div class="seg">${ISSUE_ST.filter(o=>o[0]!=='neu').concat([ISSUE_ST[0]]).map(([k,l],i)=>`<label class="seg-opt is-${k}"><input type="radio" name="biSt" value="${k}" ${i===0?'checked':''}><span>${k==='neu'?'↺ Zurück auf Neu':l}</span></label>`).join('')}</div></div>
+    <div class="field" id="biTextWrap"><label id="biTextLbl">Bemerkung (optional)</label><input id="biText" maxlength="160" value="bestellt am ${esc(new Date().toLocaleDateString('de-DE'))}"></div>
+    <div class="field"><label>Dein Name / Kürzel <span class="muted">(optional)</span></label><input id="biBy" maxlength="40" value="${esc(orgaName())}"></div></div>`;
+  const visible=()=>{const k=$('biKind').value,st=$('biStatus').value,g=$('biGroup').value;
+    return probs.filter(p=>(k==='alle'||(k==='fehlt'?/(^|\|)fehlt/.test(p.sig):/ablauf:|pruefung:/.test(p.sig)))&&(st==='alle'||p.s==='neu')&&(!g||p.item.group===g))};
+  const draw=()=>{const list=visible();
+    $('biList').innerHTML=list.length?list.map(p=>`<label class="bi-row"><input type="checkbox" data-bi="${esc(p.id)}" ${unchecked.has(p.id)?'':'checked'}><span class="bi-main"><b>${esc(p.item.name)}</b><span class="muted small">${esc(placeLabel(p.item,v))}</span></span><span class="bi-prob">${esc(probText(p))}</span><span class="bi-st" title="${esc(p.s)}">${icon[p.s]||''}</span></label>`).join('')
+      :'<div class="muted" style="padding:10px">Keine passenden Positionen.</div>';
+    $('biList').querySelectorAll('[data-bi]').forEach(c=>c.onchange=()=>{c.checked?unchecked.delete(c.dataset.bi):unchecked.add(c.dataset.bi);count()});count()};
+  const selected=()=>visible().filter(p=>!unchecked.has(p.id));
+  const count=()=>{const n=selected().length,t=visible().length;$('biCount').textContent=`${n} von ${t} ausgewählt`;$('biAll').checked=n===t&&t>0;$('biAll').indeterminate=n>0&&n<t;$('modalSave').textContent=`✓ Für ${n} Position${n===1?'':'en'} übernehmen`;$('modalSave').disabled=!n};
+  $('biAll').onchange=()=>{visible().forEach(p=>$('biAll').checked?unchecked.delete(p.id):unchecked.add(p.id));draw()};
+  ['biKind','biStatus','biGroup'].forEach(id=>$(id).onchange=draw);
+  const val=()=>($('modalBody').querySelector('input[name="biSt"]:checked')||{}).value;
+  const sync=()=>{const s=val();$('biTextWrap').classList.toggle('hidden',s==='neu');$('biTextLbl').textContent=s==='sonstige'?'Was ist der Stand? *':'Bemerkung (optional)';
+    if(s==='sonstige'&&/^bestellt am/.test($('biText').value))$('biText').value=''};
+  $('modalBody').querySelectorAll('input[name="biSt"]').forEach(r=>r.onchange=sync);sync();draw();
+  $('modalClose').onclick=()=>$('modal').classList.add('hidden');
+  $('modalSave').onclick=()=>{
+    const sel=selected(),s=val(),text=$('biText').value.trim(),by=$('biBy').value.trim();if(!sel.length)return;
+    if(s==='sonstige'&&!text){alert('Bitte bei „Sonstiges“ kurz beschreiben, was der Stand ist.');$('biText').focus();return}
+    if(!confirm(`${sel.length} Position${sel.length===1?'':'en'} auf „${ISSUE_ST.find(o=>o[0]===s)[1].replace(/^\S+\s/,'')}“ setzen?`))return;
+    if(by)setOrgaName(by);const at=new Date().toISOString(),who=by||(sbUser?.email||'').split('@')[0];
+    sel.forEach(p=>setItemValue(v,p.id,'issue',s==='neu'?'':JSON.stringify({s,t:text,sig:p.sig,at,by:who})));
+    $('modal').classList.add('hidden');toast(`✓ ${sel.length} Position${sel.length===1?'':'en'} aktualisiert – wird gespeichert …`,3500);
   };
 }
 
@@ -3226,33 +3291,97 @@ async function submitFeedback(){
   try{
     if(ONLINE){if(!sbReady)throw new Error('Nicht mit Supabase verbunden.');const {error}=await sb.from('anonymous_feedback').insert({feedback_type:type,message});if(error)throw error;
       st.textContent='Vielen Dank. Deine Rückmeldung wurde anonym gespeichert.'}
-    else{feedbackLocal.unshift({id:uid(),feedback_type:type,message,created_at:new Date().toISOString()});writeLocal();
+    else{feedbackLocal.unshift({id:uid(),feedback_type:type,message,created_at:new Date().toISOString(),status:'neu'});writeLocal();if(fb.loaded){fb.list=feedbackLocal.map(x=>({...x,status:x.status||'neu'}));afterFbChange()}
       st.textContent='Gespeichert. Hinweis: Im Offline-Modus ist die Nachricht nur auf diesem Gerät sichtbar.'}
     $('feedbackText').value='';
   }catch(e){console.error(e);st.textContent='Die Nachricht konnte nicht gespeichert werden: '+(e.message||e)}
   finally{$('sendFeedback').disabled=false}
 }
-async function loadAdminFeedback(){
-  const box=$('adminFeedbackList');let data;
-  if(ONLINE){if(!sbReady){box.innerHTML='<div class="muted">Nicht mit Supabase verbunden.</div>';return}
-    box.innerHTML='<div class="muted">Wird geladen …</div>';
-    const r=await sb.from('anonymous_feedback').select('id,feedback_type,message,created_at').order('created_at',{ascending:false});
-    if(r.error){box.innerHTML='<div class="muted">Rückmeldungen konnten nicht geladen werden: '+esc(r.error.message)+'</div>';return}data=r.data}
-  else data=feedbackLocal;
-  box.innerHTML=data?.length?data.map(x=>`<label class="card" style="background:#f8fbfd;margin:10px 0 0;display:block;cursor:pointer"><div style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" class="fb-check" data-id="${esc(x.id)}" style="margin-top:4px;width:18px;height:18px"><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>${esc(x.feedback_type)}</strong><span class="muted small">${esc(new Date(x.created_at).toLocaleString('de-DE'))}</span></div><div style="margin-top:8px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(x.message)}</div></div></div></label>`).join(''):'<div class="muted">Noch keine Rückmeldungen vorhanden.</div>';
-  updateFeedbackDeleteBtn();
+/* ---- Nachrichten-Postfach (Admin): Status Neu → Gelesen / In Bearbeitung / Erledigt / Nicht bearbeitbar ---- */
+const FB_ST=[['neu','🆕 Neu'],['gelesen','👁️ Gelesen'],['bearbeitung','🛠️ In Bearbeitung'],['erledigt','✅ Erledigt'],['nicht','🚫 Nicht bearbeitbar']];
+const fb={list:[],loaded:false,loading:false,view:'open',unlocked:false};
+const fbStatus=x=>x.status||'neu';
+const fbNewCount=()=>fb.list.filter(x=>fbStatus(x)==='neu').length;
+async function loadFeedbackInbox(force){
+  if(fb.loading||(fb.loaded&&!force))return;
+  if(!ONLINE){fb.list=feedbackLocal.map(x=>({...x,status:x.status||'neu'}));fb.loaded=true;afterFbChange();return}
+  if(!sbReady)return;
+  fb.loading=true;const r=await fetchAll(()=>sb.from('anonymous_feedback').select('*').order('created_at',{ascending:false}).order('id'));fb.loading=false;
+  if(r.error){toast('Nachrichten konnten nicht geladen werden: '+r.error.message,5000);return}
+  fb.list=r.data||[];fb.loaded=true;afterFbChange();
 }
-function updateFeedbackDeleteBtn(){const n=document.querySelectorAll('.fb-check:checked').length,b=$('deleteSelectedFeedback');b.disabled=!n;b.textContent=n?`🗑️ ${n} Nachricht${n===1?'':'en'} löschen`:'🗑️ Nachrichten löschen'}
-document.addEventListener('change',e=>{if(e.target.classList?.contains('fb-check'))updateFeedbackDeleteBtn()});
-$('deleteSelectedFeedback').onclick=async()=>{
-  const ids=[...document.querySelectorAll('.fb-check:checked')].map(x=>x.dataset.id);if(!ids.length||!confirm(ids.length+' Nachricht(en) wirklich löschen?'))return;
-  if(ONLINE){const {error}=await sb.from('anonymous_feedback').delete().in('id',ids);if(error){alert('Löschen fehlgeschlagen:\n'+error.message);return}}
-  else{feedbackLocal=feedbackLocal.filter(x=>!ids.includes(x.id));writeLocal()}
-  loadAdminFeedback();
-};
+function afterFbChange(){updateFbNotice();if(!$('fbInbox').classList.contains('hidden'))renderFbInbox()}
+function onRemoteFeedback(p){
+  if(p.eventType==='DELETE')fb.list=fb.list.filter(x=>x.id!==p.old?.id);
+  else{const i=fb.list.findIndex(x=>x.id===p.new.id);if(i<0)fb.list.unshift(p.new);else fb.list[i]={...fb.list[i],...p.new}}
+  afterFbChange();
+  if(p.eventType==='INSERT'&&adminUnlocked)maybeFbPopup(true);
+}
+function openFbInbox(){
+  if(!adminUnlocked&&!fb.unlocked){const p=askPassword('Nachrichten – Admin-Passwort');if(p===null)return;if(p!==settings.adminPassword){alert('Falsches Passwort.');return}fb.unlocked=true}
+  showPage('feedbackPage');$('fbInbox').classList.remove('hidden');$('fbList').innerHTML='<div class="muted">Wird geladen …</div>';
+  loadFeedbackInbox(true).then(renderFbInbox);renderFbInbox();
+  setTimeout(()=>$('fbInbox').scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+function renderFbInbox(){
+  if(!fb.loaded){return}
+  const inView=x=>{const st=fbStatus(x);return fb.view==='done'?st==='erledigt':fb.view==='nope'?st==='nicht':(st!=='erledigt'&&st!=='nicht')};
+  const cnt={open:fb.list.filter(x=>!['erledigt','nicht'].includes(fbStatus(x))).length,done:fb.list.filter(x=>fbStatus(x)==='erledigt').length,nope:fb.list.filter(x=>fbStatus(x)==='nicht').length};
+  document.querySelectorAll('[data-fbv]').forEach(b=>{b.classList.toggle('active',b.dataset.fbv===fb.view);const base={open:'Offen',done:'✅ Erledigt',nope:'🚫 Nicht bearbeitbar'}[b.dataset.fbv];b.textContent=base+' ('+cnt[b.dataset.fbv]+')'});
+  const order={neu:0,gelesen:1,bearbeitung:2};
+  const list=fb.list.filter(inView).sort((a,b)=>fb.view==='open'?((order[fbStatus(a)]??3)-(order[fbStatus(b)]??3))||String(b.created_at).localeCompare(String(a.created_at)):String(b.status_at||b.created_at).localeCompare(String(a.status_at||a.created_at)));
+  $('fbList').innerHTML=list.length?list.map(x=>{const st=fbStatus(x);return `<div class="fbmsg st-${esc(st)}" data-fbid="${esc(x.id)}">
+      <div class="fbmsg-head"><span class="badge">${esc(x.feedback_type||'Nachricht')}</span><span class="fbst s-${esc(st)}">${esc(FB_ST.find(o=>o[0]===st)?.[1]||st)}</span><span class="muted small" style="margin-left:auto">${esc(fmtDateTime(x.created_at))}</span></div>
+      <div class="fbmsg-text">${esc(x.message)}</div>
+      <div class="fbmsg-actions">${FB_ST.map(([k,l])=>`<button type="button" class="chip ${k===st?'on':''}" data-fbset="${k}">${l}</button>`).join('')}</div>
+      <details class="fbnote"${x.admin_note?' open':''}><summary>📝 Interne Notiz</summary><textarea rows="2" data-fbnote placeholder="Nur für Admins sichtbar …">${esc(x.admin_note||'')}</textarea></details>
+      <div class="fbmsg-foot">${x.status_at?`<span class="muted small">Status geändert ${esc(fmtDateTime(x.status_at))}</span>`:''}<button type="button" class="tc-del" data-fbdel title="Nachricht löschen">🗑️</button></div></div>`}).join('')
+    :`<div class="muted">${fb.view==='open'?'Keine offenen Nachrichten. 🎉':'Dieses Archiv ist leer.'}</div>`;
+  $('fbList').querySelectorAll('[data-fbid]').forEach(card=>{const id=card.dataset.fbid;
+    card.querySelectorAll('[data-fbset]').forEach(b=>b.onclick=()=>setFbStatus(id,b.dataset.fbset));
+    card.querySelector('[data-fbnote]').onchange=e=>saveFbFields(id,{admin_note:e.target.value.trim()||null},'Notiz gespeichert.');
+    card.querySelector('[data-fbdel]').onclick=()=>deleteFb(id)});
+}
+async function saveFbFields(id,patch,msg){
+  const x=fb.list.find(m=>m.id===id);if(!x)return false;const prev={...x};Object.assign(x,patch);
+  try{
+    if(ONLINE){if(!sbReady)throw new Error('Nicht mit Supabase verbunden.');const {data,error}=await withTimeout(sb.from('anonymous_feedback').update(patch).eq('id',id).select('id'));if(error)throw error;if(!(data||[]).length)throw new Error('Nicht gespeichert – bitte neu anmelden.')}
+    else{const l=feedbackLocal.find(m=>m.id===id);if(l)Object.assign(l,patch);writeLocal()}
+    if(msg)toast(msg);afterFbChange();return true;
+  }catch(e){Object.assign(x,prev);afterFbChange();alert('Speichern fehlgeschlagen:\n'+(e.message||e));return false}
+}
+function setFbStatus(id,st){
+  const lbl=FB_ST.find(o=>o[0]===st)[1];
+  saveFbFields(id,{status:st,status_at:new Date().toISOString()},st==='erledigt'?'✅ Ins Archiv „Erledigt“ verschoben.':st==='nicht'?'🚫 Ins Archiv „Nicht bearbeitbar“ verschoben.':'Status: '+lbl.replace(/^\S+\s/,''));
+}
+async function deleteFb(id){
+  if(!confirm('Diese Nachricht endgültig löschen?'))return;
+  if(ONLINE){const {error}=await sb.from('anonymous_feedback').delete().eq('id',id);if(error){alert('Löschen fehlgeschlagen:\n'+error.message);return}}
+  else{feedbackLocal=feedbackLocal.filter(x=>x.id!==id);writeLocal()}
+  fb.list=fb.list.filter(x=>x.id!==id);afterFbChange();toast('Nachricht gelöscht.');
+}
+/* Hinweis auf der Startseite für Admins: erscheint immer wieder, solange es Nachrichten mit Status „Neu“ gibt */
+function updateFbNotice(){
+  const n=adminUnlocked&&fb.loaded?fbNewCount():0,b=$('fbNotice');if(!b)return;
+  b.classList.toggle('hidden',!n);
+  if(n)b.innerHTML=`<span>📬 <b>${n} neue anonyme Nachricht${n>1?'en':''}</b> unter „Wünsche &amp; Anregungen“</span><button class="btn white" type="button" id="fbNoticeBtn">Ansehen</button>`,$('fbNoticeBtn').onclick=openFbInbox;
+}
+function maybeFbPopup(fresh){
+  if(!adminUnlocked||!fb.loaded||$('chooser').style.display==='none'||document.getElementById('fbPopup')||document.querySelector('#loginOverlay,#kickOverlay,#takeoverOverlay'))return;
+  const n=fbNewCount();if(!n)return;
+  const o=document.createElement('div');o.className='urgent-overlay';o.id='fbPopup';o.setAttribute('role','alertdialog');
+  o.innerHTML=`<div class="urgent-box" style="border-color:#1f6e9e"><div class="urgent-icon">📬</div><div class="urgent-text" style="color:#17324d">${fresh?'Soeben ist eine neue anonyme Nachricht eingegangen.':`Es gibt ${n} neue anonyme Nachricht${n>1?'en':''}.`}</div>
+    <p class="muted" style="margin:0 0 14px">Dieser Hinweis erscheint wieder, bis die Nachrichten auf „Gelesen“, „In Bearbeitung“, „Erledigt“ oder „Nicht bearbeitbar“ gesetzt sind.</p>
+    <button class="btn blue" type="button" id="fbPopupOpen">Nachrichten ansehen</button><button class="btn white" type="button" id="fbPopupLater" style="margin-top:8px">Später</button></div>`;
+  document.body.appendChild(o);
+  $('fbPopupOpen').onclick=()=>{o.remove();openFbInbox()};$('fbPopupLater').onclick=()=>o.remove();
+}
+document.querySelectorAll('[data-fbv]').forEach(b=>b.onclick=()=>{fb.view=b.dataset.fbv;renderFbInbox()});
+$('fbInboxBtn').onclick=openFbInbox;
+$('fbRefresh').onclick=()=>loadFeedbackInbox(true);
+$('fbLock').onclick=()=>{fb.unlocked=false;$('fbInbox').classList.add('hidden');window.scrollTo(0,0)};
 $('feedbackChoice').onclick=e=>{e.preventDefault();showPage('feedbackPage')};
 $('sendFeedback').onclick=submitFeedback;
-$('refreshFeedback').onclick=loadAdminFeedback;
 
 /* ================= BARCODES ================= */
 let barcodeStream=null,barcodeReader=null,barcodeScanActive=false,/* sectionScan siehe unten */barcodeTarget=null,barcodeVehicle=null,barcodeForAddPage=false,barcodeCallback=null;
